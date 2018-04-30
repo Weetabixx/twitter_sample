@@ -82,17 +82,21 @@ def search_api(handle="@MaplecroftRisk"):
                                            lang='en', count=50)
     except:
         pass
+    idList = Set([])
+    f = open("mapletweets", "r")
+    for line in f.readlines():
+        idList.add(line)
+    f.close()
     for n in range(len(found_posts['statuses'])): # iterate over all found tweets
-        tweetid = found_posts['statuses'][n]['id']
+        tweetid = str(found_posts['statuses'][n]['id'])
         idList.add(tweetid)
     f = open("mapletweets", "w")
     for num in idList:
-        f.write(num)
+        f.write(num + "\n")
     f.close()
 
 #launch separate threads fro search and stream
 search_thread = Thread(target=search_api)
 stream_thread = Thread(target=stream_api)
-idList = Set([])
 search_thread.start()
 stream_thread.start()
