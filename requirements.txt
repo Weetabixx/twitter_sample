@@ -1,2 +1,0 @@
-tweepy==3.5.0
-twitter==1.12.1

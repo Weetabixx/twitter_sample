@@ -74,21 +74,25 @@ def search_api(handle="@MaplecroftRisk"):
     #establishing connection to twitter REST API
     oauth = OAuth(ACCESS_TOKEN, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
     twitter = Twitter(auth=oauth)
-    #try except, because if account table is empty, we don't search
+    #try except
     try:
-        
         #get twitter results using handle objects
         # Search queries to be parsed by Twitter API
         found_posts = twitter.search.tweets(q=handle, result_type='recent', 
                                            lang='en', count=50)
+        #  can adjust count to allow more tweets, but also takes longer
     except:
         pass
     idList = Set([])
+    
+    #  load previous tweets
     f = open("mapletweets", "r")
     for line in f.readlines():
         idList.add(line)
     f.close()
     countries = {}
+    
+    #  load countries
     with open('countries.csv', 'rb') as csvfile:
         spamreader = csv.reader(csvfile)
         for row in spamreader:
@@ -100,12 +104,13 @@ def search_api(handle="@MaplecroftRisk"):
             if country in str(found_posts['statuses'][n]['text'].encode('utf-8')):
                 countries[country] += 1
                 
+    #  save country mentions
     f = open("maplecountries", "w")
     for country in countries:
         f.write(country + "," + str(countries[country]) + "\n")
     f.close()
 
-        
+    #  save id of tweets
     f = open("mapletweets", "w")
     for num in idList:
         f.write(num + "\n")

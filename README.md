@@ -41,6 +41,17 @@ https://docs.djangoproject.com/en/1.9/intro/tutorial01/
 Visit http://docs.c9.io for support, or to learn more about using Cloud9 IDE.
 To watch some training videos, visit http://www.youtube.com/user/c9ide
 
+================================================================================
+
+Runs on python 2.7 and django 1.9
+In order to be able to run, first install these packages using pip:
+
 pyoembed
 tweepy
 twitter
+
+Then replace Auth codes in maplecroft/startup.py with own authentication codes
+
+To access map view navigate to website/map
+To access latest tweets navigate to website/
+Keep in mind that viewing the tweets is highly un-optimised and will take a while
