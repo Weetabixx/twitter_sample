@@ -20,6 +20,6 @@ import maplecroft.views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^map/', maplecroft.views.index),
-    url(r'', maplecroft.views.map_view),
+    url(r'^map/', maplecroft.views.map_view),
+    url(r'', maplecroft.views.index),
 ]
