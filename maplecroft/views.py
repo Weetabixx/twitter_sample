@@ -4,6 +4,8 @@ from django.template import loader
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from sets import Set
+import csv
+
 
 import startup
 
@@ -41,7 +43,7 @@ def index(request):
         # handle does not matter, only id
         
         try:
-            data = oEmbed(url)
+            data = oEmbed(url)  # lots of optimisation to do around this
             htmlstrings += data['html']
         except PyOembedException, e:
             print 'An error was ocurred: %s' % e
@@ -53,3 +55,47 @@ def index(request):
     context['tweets'] = htmlstrings
         
     return HttpResponse(template.render(context))
+    
+    
+def map_view(request):
+    template = loader.get_template('map.html')
+    dots = {}
+    f = open("maplecountries", "r")
+    for line in f.readlines():
+        x = line.split(",")
+        dots[x[0]] = {}
+        dots[x[0]]['size'] = int(x[1])
+    f.close()
+    
+    with open('countries.csv', 'rb') as csvfile:
+        spamreader = csv.reader(csvfile)
+        for row in spamreader:
+            name = row[0]
+            longitude = row[2]
+            if longitude == "None":
+                longitude = "0"
+            latitude = row[3]
+            if latitude == "None":
+                latitude = "0"
+            dots[name]['lng'] = longitude
+            dots[name]['lat'] = latitude
+            
+    htmldots = ""
+    
+    for dot in dots:
+        x = 180 + float(dots[dot]['lng'])
+        y = 90 + (float(dots[dot]['lat']) * -1)  # longitude is upside down
+        htmldots += '<span class="dot" style="height:'
+        htmldots += str(dots[dot]['size'])
+        htmldots += 'px;width:'
+        htmldots += str(dots[dot]['size'])
+        htmldots += 'px;position:absolute;left:'
+        htmldots += str(x) 
+        htmldots += 'px;top:'
+        htmldots += str(y) 
+        htmldots += 'px;background-color: #bbb;border-radius: 50%;"></span>'
+    context = {}
+    context['dots'] = htmldots
+    return HttpResponse(template.render(context))
+    
+    

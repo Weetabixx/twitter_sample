@@ -12,6 +12,7 @@ import os
 import threading
 import requests.packages.urllib3
 import requests
+import csv
 
 
 from django.db import transaction
@@ -25,7 +26,7 @@ from twitter import TwitterHTTPError
 from twitter import TwitterStream
 from sets import Set
 
-
+# never do this ever
 # Variables that contains the user credentials to access Twitter API  # Need to be more secretive about this
 ACCESS_TOKEN = '4340760208-vqpWpqskrir7NGnBdWJwK9m2NZ81ytMccC0xyfU'
 ACCESS_SECRET = 'dZlFUDqkOLeRRW8Ko6WEimwePlt7RbZTvsCkicDciV5vr'
@@ -87,9 +88,24 @@ def search_api(handle="@MaplecroftRisk"):
     for line in f.readlines():
         idList.add(line)
     f.close()
+    countries = {}
+    with open('countries.csv', 'rb') as csvfile:
+        spamreader = csv.reader(csvfile)
+        for row in spamreader:
+            countries[row[0]] = 0
     for n in range(len(found_posts['statuses'])): # iterate over all found tweets
         tweetid = str(found_posts['statuses'][n]['id'])
         idList.add(tweetid)
+        for country in countries:  # count all mentions of countries
+            if country in str(found_posts['statuses'][n]['text'].encode('utf-8')):
+                countries[country] += 1
+                
+    f = open("maplecountries", "w")
+    for country in countries:
+        f.write(country + "," + str(countries[country]) + "\n")
+    f.close()
+
+        
     f = open("mapletweets", "w")
     for num in idList:
         f.write(num + "\n")
